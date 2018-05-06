@@ -2,9 +2,12 @@ require("dotenv").config();
 var keys = require("./keys.js");
 var Twitter = require('twitter');
 var Spotify = require('node-spotify-api');
+var Omdb = require('omdb');
+var request = require('request');
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
-var OMDBKey = keys.omdb;
+var omdb = keys.omdb.api_key;
+console.log(omdb);
 
 var liriCommand = process.argv[2];
 
@@ -18,12 +21,13 @@ function runLiri() {
     }
     else if (liriCommand === "movie-this") {
         runOmdb();
+        console.log('must run runOmdb');
     }
     else if (liriCommand === "do-what-it-says") {
         runRandom();
     }
     else {
-        console.log("invalid command");
+        console.log("Invalid command. Try 'my-tweets','spotify-this-song','movie-this', or 'do-what-it-says'.");
         return;
     }
 }
@@ -76,7 +80,7 @@ function runSpotify() {
             //normal response - get all tracks if there are multiple with the same name.
             else {
                 for (var i = 0; i < data.tracks.items.length; i++) {
-                    console.log('\n========= ( '+ i +' ) =========');
+                    console.log('\n========= ( ' + i + ' ) =========');
                     console.log('ARTIST: ' + data.tracks.items[i].album.artists[0].name);
                     console.log('SONG: ' + data.tracks.items[i].name);
                     console.log('PREVIEW URL: ' + data.tracks.items[i].preview_url);
@@ -87,8 +91,41 @@ function runSpotify() {
     }
 }
 
-function omdb() {
+function runOmdb() {
+    var movieName = "";
+    for (var i = 3; i < process.argv.length; i++) {
 
+        if (i > 3 && i < process.argv.length) {
+      
+          movieName = movieName + "+" + process.argv[i];
+      
+        }
+      
+        else {
+      
+          movieName += process.argv[i];
+      
+        }
+      }
+      console.log(movieName);
+    var queryURL = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=" + omdb;
+    request(queryURL, function (error, response, body) {
+
+        // If the request is successful (i.e. if the response status code is 200)
+        if (!error && response.statusCode === 200) {
+
+            // Parse the body of the site and recover just the imdbRating
+            // (Note: The syntax below for parsing isn't obvious. Just spend a few moments dissecting it).
+            console.log("Title: " + JSON.parse(body).Title);
+            console.log("Year: " + JSON.parse(body).Year);
+            console.log("IMDB rating: " + JSON.parse(body).imdbRating);
+            console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value);
+            console.log("Country: " + JSON.parse(body).Country);
+            console.log("Language: " + JSON.parse(body).Language);
+            console.log("Plot: " + JSON.parse(body).Plot);
+            console.log("Actors: " + JSON.parse(body).Actors);
+        }
+    });
 }
 
 function random() {
