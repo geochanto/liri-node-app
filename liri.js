@@ -7,9 +7,22 @@ var request = require('request');
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
 var omdb = keys.omdb.api_key;
-console.log(omdb);
-
 var liriCommand = process.argv[2];
+var searchPhrase = "";
+for (var i = 3; i < process.argv.length; i++) {
+
+    if (i > 3 && i < process.argv.length) {
+  
+        searchPhrase = searchPhrase + "+" + process.argv[i];
+  
+    }
+  
+    else {
+  
+        searchPhrase += process.argv[i];
+  
+    }
+  }
 
 
 function runLiri() {
@@ -47,7 +60,8 @@ function runTwitter() {
 }
 
 function runSpotify() {
-    var spotifySong = process.argv[3];
+    // var spotifySong = process.argv[3];
+    var spotifySong = searchPhrase;
     //if no song is provided
     if (spotifySong === undefined) {
         //output "The Sign" by Ace of Base
@@ -92,22 +106,7 @@ function runSpotify() {
 }
 
 function runOmdb() {
-    var movieName = "";
-    for (var i = 3; i < process.argv.length; i++) {
-
-        if (i > 3 && i < process.argv.length) {
-      
-          movieName = movieName + "+" + process.argv[i];
-      
-        }
-      
-        else {
-      
-          movieName += process.argv[i];
-      
-        }
-      }
-      console.log(movieName);
+    var movieName = searchPhrase;
     var queryURL = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=" + omdb;
     request(queryURL, function (error, response, body) {
 
