@@ -8,22 +8,23 @@ var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
 var omdb = keys.omdb.api_key;
 var liriCommand = process.argv[2];
+
+//Search phrase to contain all arguments after argv[3] for multi-word searches.
 var searchPhrase = "";
 for (var i = 3; i < process.argv.length; i++) {
-
     if (i > 3 && i < process.argv.length) {
-  
         searchPhrase = searchPhrase + "+" + process.argv[i];
-  
     }
-  
     else {
-  
         searchPhrase += process.argv[i];
-  
     }
-  }
+}
 
+//ID of default spotify song "The Sign" by Ace of Base (in case user does not provide a search phrase)
+var defaultSpotifyID = '0hrBpAOgrt8RXigk83LLNE';
+
+//Default moie "Mr. Nobody" (in case user does not provide a search phrase)
+var defaultMovie = 'Mr. Nobody';
 
 function runLiri() {
     if (liriCommand === "my-tweets") {
@@ -34,7 +35,6 @@ function runLiri() {
     }
     else if (liriCommand === "movie-this") {
         runOmdb();
-        console.log('must run runOmdb');
     }
     else if (liriCommand === "do-what-it-says") {
         runRandom();
@@ -60,13 +60,12 @@ function runTwitter() {
 }
 
 function runSpotify() {
-    // var spotifySong = process.argv[3];
     var spotifySong = searchPhrase;
     //if no song is provided
-    if (spotifySong === undefined) {
+    if (process.argv[3] === undefined) {
         //output "The Sign" by Ace of Base
         spotify
-            .request('https://api.spotify.com/v1/tracks/0hrBpAOgrt8RXigk83LLNE')
+            .request('https://api.spotify.com/v1/tracks/' + defaultSpotifyID)
             .then(function (data) {
                 console.log('==================');
                 console.log("You provided no song to search. Here's the default result.");
@@ -107,24 +106,47 @@ function runSpotify() {
 
 function runOmdb() {
     var movieName = searchPhrase;
-    var queryURL = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=" + omdb;
-    request(queryURL, function (error, response, body) {
+    if (process.argv[3] === undefined) {
+        var queryURL = "http://www.omdbapi.com/?t=" + defaultMovie + "&y=&plot=short&apikey=" + omdb;
+        request(queryURL, function (error, response, body) {
 
-        // If the request is successful (i.e. if the response status code is 200)
-        if (!error && response.statusCode === 200) {
+            // If the request is successful (i.e. if the response status code is 200)
+            if (!error && response.statusCode === 200) {
 
-            // Parse the body of the site and recover just the imdbRating
-            // (Note: The syntax below for parsing isn't obvious. Just spend a few moments dissecting it).
-            console.log("Title: " + JSON.parse(body).Title);
-            console.log("Year: " + JSON.parse(body).Year);
-            console.log("IMDB rating: " + JSON.parse(body).imdbRating);
-            console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value);
-            console.log("Country: " + JSON.parse(body).Country);
-            console.log("Language: " + JSON.parse(body).Language);
-            console.log("Plot: " + JSON.parse(body).Plot);
-            console.log("Actors: " + JSON.parse(body).Actors);
-        }
-    });
+                // Parse the body of the site and recover needed details
+                console.log('==================');
+                console.log("You provided no movie to search. Here's the default result.");
+                console.log("Title: " + JSON.parse(body).Title);
+                console.log("Year: " + JSON.parse(body).Year);
+                console.log("IMDB rating: " + JSON.parse(body).imdbRating);
+                console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value);
+                console.log("Country: " + JSON.parse(body).Country);
+                console.log("Language: " + JSON.parse(body).Language);
+                console.log("Plot: " + JSON.parse(body).Plot);
+                console.log("Actors: " + JSON.parse(body).Actors);
+            }
+        });
+    }
+    else {
+        var queryURL = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=" + omdb;
+        request(queryURL, function (error, response, body) {
+
+            // If the request is successful (i.e. if the response status code is 200)
+            if (!error && response.statusCode === 200) {
+
+                // Parse the body of the site and recover needed details
+                console.log('==================');
+                console.log("Title: " + JSON.parse(body).Title);
+                console.log("Year: " + JSON.parse(body).Year);
+                console.log("IMDB rating: " + JSON.parse(body).imdbRating);
+                console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value);
+                console.log("Country: " + JSON.parse(body).Country);
+                console.log("Language: " + JSON.parse(body).Language);
+                console.log("Plot: " + JSON.parse(body).Plot);
+                console.log("Actors: " + JSON.parse(body).Actors);
+            }
+        });
+    }
 }
 
 function random() {
