@@ -2,6 +2,6 @@ spotify-this-song,"I Want it That Way"
 spotify-this-song,"Yesterday"
 movie-this,"Braveheart"
 my-tweets
-movie-this,"Me, Myself and Irene"
+movie-this,"Me, Myself & Irene"
 spotify-this-song
 movie-this

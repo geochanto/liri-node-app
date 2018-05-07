@@ -9,14 +9,11 @@ var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
 var omdb = keys.omdb.api_key;
 var liriCommand = process.argv[2];
-var searchPhrase;
 var spotifySong;
 var movieName;
 
-
-
 //Search phrase to contain all arguments after argv[3] for multi-word searches.
-
+var searchPhrase = '';
 for (var i = 3; i < process.argv.length; i++) {
     if (i > 3 && i < process.argv.length) {
         searchPhrase = searchPhrase + "+" + process.argv[i];
@@ -115,7 +112,6 @@ function runSpotify() {
 function runOmdb() {
 
     movieName = searchPhrase;
-    console.log('Movie Name:' + searchPhrase);
     if (process.argv[3] === undefined) {
         var queryURL = "http://www.omdbapi.com/?t=" + defaultMovie + "&y=&plot=short&apikey=" + omdb;
         request(queryURL, function (error, response, body) {
@@ -138,6 +134,7 @@ function runOmdb() {
         });
     }
     else {
+        console.log('Movie Name:' + movieName);
         var queryURL = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=" + omdb;
         request(queryURL, function (error, response, body) {
 
@@ -175,9 +172,11 @@ function runRandom() {
 
         // get command of the random line item (split by 1st comma in case there are multiple commas)
         liriCommand = randomItem.split(/,(.+)?/)[0];
+        console.log('liri command: ' + liriCommand);
 
         // get search phrase of the random line item (split by 1st comma in case there are multiple commas)
         searchPhrase = randomItem.split(/,(.+)?/)[1];
+        console.log('search phrase: ' + searchPhrase);
 
         // set argv[3] to the search phrase so if/else logic still works correctly.
         process.argv[3] = searchPhrase;
