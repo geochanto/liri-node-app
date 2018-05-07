@@ -4,13 +4,19 @@ var Twitter = require('twitter');
 var Spotify = require('node-spotify-api');
 var Omdb = require('omdb');
 var request = require('request');
+var fs = require("fs");
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
 var omdb = keys.omdb.api_key;
 var liriCommand = process.argv[2];
+var searchPhrase;
+var spotifySong;
+var movieName;
+
+
 
 //Search phrase to contain all arguments after argv[3] for multi-word searches.
-var searchPhrase = "";
+
 for (var i = 3; i < process.argv.length; i++) {
     if (i > 3 && i < process.argv.length) {
         searchPhrase = searchPhrase + "+" + process.argv[i];
@@ -60,7 +66,9 @@ function runTwitter() {
 }
 
 function runSpotify() {
-    var spotifySong = searchPhrase;
+    
+    spotifySong = searchPhrase;
+    console.log('Spotify Song: ' + spotifySong);
     //if no song is provided
     if (process.argv[3] === undefined) {
         //output "The Sign" by Ace of Base
@@ -105,7 +113,9 @@ function runSpotify() {
 }
 
 function runOmdb() {
-    var movieName = searchPhrase;
+    
+    movieName = searchPhrase;
+    console.log('Movie Name:' + searchPhrase);
     if (process.argv[3] === undefined) {
         var queryURL = "http://www.omdbapi.com/?t=" + defaultMovie + "&y=&plot=short&apikey=" + omdb;
         request(queryURL, function (error, response, body) {
@@ -149,6 +159,29 @@ function runOmdb() {
     }
 }
 
-function random() {
+function runRandom() {
+    fs.readFile("random.txt", "utf8", function(error, data) {
 
+        // If the code experiences any errors it will log the error to the console.
+        if (error) {
+          return console.log(error);
+        }
+      
+        // Split data by newslines
+        var dataArr = data.split("\n");
+
+        // pick a random line item from the array
+        var randomItem = dataArr[Math.floor(Math.random()*dataArr.length)];
+        
+        // get command of the random line item (split by 1st comma in case there are multiple commas)
+        liriCommand = randomItem.split(/,(.+)?/)[0];
+
+        // get search phrase of the random line item (split by 1st comma in case there are multiple commas)
+        searchPhrase = randomItem.split(/,(.+)?/)[1];
+
+        // set argv[3] to the search phrase so if/else logic still works correctly.
+        process.argv[3] = searchPhrase;
+
+        runLiri();
+      });
 }
