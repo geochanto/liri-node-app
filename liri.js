@@ -66,7 +66,7 @@ function runTwitter() {
 }
 
 function runSpotify() {
-    
+
     spotifySong = searchPhrase;
     console.log('Spotify Song: ' + spotifySong);
     //if no song is provided
@@ -113,7 +113,7 @@ function runSpotify() {
 }
 
 function runOmdb() {
-    
+
     movieName = searchPhrase;
     console.log('Movie Name:' + searchPhrase);
     if (process.argv[3] === undefined) {
@@ -160,19 +160,19 @@ function runOmdb() {
 }
 
 function runRandom() {
-    fs.readFile("random.txt", "utf8", function(error, data) {
+    fs.readFile("random.txt", "utf8", function (error, data) {
 
         // If the code experiences any errors it will log the error to the console.
         if (error) {
-          return console.log(error);
+            return console.log(error);
         }
-      
+
         // Split data by newslines
         var dataArr = data.split("\n");
 
         // pick a random line item from the array
-        var randomItem = dataArr[Math.floor(Math.random()*dataArr.length)];
-        
+        var randomItem = dataArr[Math.floor(Math.random() * dataArr.length)];
+
         // get command of the random line item (split by 1st comma in case there are multiple commas)
         liriCommand = randomItem.split(/,(.+)?/)[0];
 
@@ -183,5 +183,5 @@ function runRandom() {
         process.argv[3] = searchPhrase;
 
         runLiri();
-      });
+    });
 }
